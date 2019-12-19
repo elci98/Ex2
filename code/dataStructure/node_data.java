@@ -4,10 +4,10 @@ import utils.Point3D;
 /**
  * This interface represents the set of operations applicable on a 
  * node (vertex) in a (directional) weighted graph.
- * @author boaz.benmoshe
  *
  */
-public interface node_data {
+public interface node_data 
+{
 	/**
 	 * Return the key (id) associated with this node.
 	 * @return
