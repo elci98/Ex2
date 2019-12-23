@@ -1,15 +1,21 @@
 package dataStructure;
 
-public class edgeData implements edge_data 
+import java.io.Serializable;
+
+public class edgeData implements edge_data,Serializable
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private nodeData _src,_dest;
 	private int _tag;
 	private double _weight;
 	private String _info;
-	public edgeData(nodeData src, nodeData dest, double weight, int tag, String info)
+	public edgeData(node_data src, node_data dest, double weight, int tag, String info)
 	{
-		_src=src;
-		_dest=dest;
+		_src=(nodeData) src;
+		_dest=(nodeData) dest;
 		_weight=weight;
 		_tag=tag;
 		_info=info;
@@ -57,6 +63,10 @@ public class edgeData implements edge_data
 			_tag=t;
 		else
 			System.out.println("invalid inserted tag");
+	}
+	public String toString()
+	{
+		return _src+"-----"+(int)_weight+"---->"+_dest;
 	}
 
 }

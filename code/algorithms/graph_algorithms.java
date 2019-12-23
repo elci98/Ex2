@@ -8,8 +8,6 @@ package algorithms;
  * 5. double shortestPathDist(int src, int dest);
  * 6. List<Node> shortestPath(int src, int dest);
  *
- * @author boaz.benmoshe
- *
  */
 
 import java.util.List;
@@ -17,7 +15,8 @@ import java.util.List;
 import dataStructure.graph;
 import dataStructure.node_data;
 
-public interface graph_algorithms {
+public interface graph_algorithms 
+{
 	/**
 	 * Init this set of algorithms on the parameter - graph.
 	 * @param g

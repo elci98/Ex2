@@ -1,36 +1,59 @@
 package dataStructure;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.Map.Entry;
 
-public class DGraph implements graph
+public class DGraph implements graph,Serializable
 {
-	HashMap<Integer,nodeData> DNodes=new HashMap<>();
-	HashMap<Integer,edge_data> DEdges=new HashMap<>();
-	HashSet<Integer> h=new HashSet<>();
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	/**
+	 * @param Nodes-hashMap that stores all nodes in this graph
+	 * @param srcMap- 
+	 * 
+	 * */
+	private int changes=0;
+	HashMap<Integer,node_data> Nodes=new HashMap<>(); // list of all nodes
+	int EdgesSize=0;// number of all edges
+	HashMap<Integer,HashMap<Integer,edge_data>> srcMap=new HashMap<>();//list of all source vertices contains a list of their edges and destination
+	public DGraph()
+	{
+
+	}
+	@SuppressWarnings("unchecked")
+	public DGraph(HashMap<Integer,node_data> _Nodes, int EdgesSize,HashMap<Integer,HashMap<Integer,edge_data>> _srcMap)
+	{
+		Nodes=(HashMap<Integer, node_data>) _Nodes.clone();
+		this.EdgesSize=EdgesSize;
+		srcMap=(HashMap<Integer, HashMap<Integer,edge_data>>) _srcMap.clone();
+	}
 	@Override
 	public node_data getNode(int key) 
 	{
-		if(DNodes.containsKey(key))
-			return (node_data)DNodes.get(key);
-		return null;
+		return Nodes.get(key);
 	}
+
 
 	@Override
 	public edge_data getEdge(int src, int dest) 
 	{
-		if(DNodes.containsKey(src) && DNodes.containsKey(dest))
-		{
-			return DEdges.get(DNodes.get(src).hashCode()+DNodes.get(dest).hashCode());
-		}
-		return null;
+		return srcMap.get(src).get(dest);
 	}
 
 	@Override
 	public void addNode(node_data n) 
 	{
-		DNodes.put(n.getKey(), (nodeData)n);
+		if(!Nodes.containsKey(n.getKey()))
+		{
+			Nodes.put(n.getKey(), (nodeData)n);
+			changes++;
+		}
+		else
+			System.out.println("id number occupied");
 	}
 
 	/**
@@ -40,63 +63,101 @@ public class DGraph implements graph
 	@Override
 	public void connect(int src, int dest, double w) 
 	{
-		if(DNodes.containsKey(src) && DNodes.containsKey(dest))
+		assert(w<0):"invalid weight: should be a non negative number";
+		node_data dst=Nodes.get(dest);
+		node_data source=Nodes.get(src);
+
+		edgeData value=new edgeData(source, dst, w, 0, "");
+		if(source!=null && dst!=null && srcMap.containsKey(src))
 		{
-			edgeData value= new edgeData(DNodes.get(src),DNodes.get(dest),w,1,"");
-			int key=DNodes.get(src).hashCode()+DNodes.get(dest).hashCode();
-			DEdges.put(key, value);
+			if(!srcMap.get(src).containsKey(dest))
+			{
+				srcMap.get(src).put(dest,value);
+				changes++;
+				EdgesSize++;
+			}
+			else
+				System.out.println("This edge already exist");
+		}
+		else if (!srcMap.containsKey(src))
+		{
+			HashMap<Integer,edge_data> map=new HashMap<>();
+			map.put(dest,value);
+			srcMap.put(src, map);
+			changes++;
+			EdgesSize++;
 		}
 		else
 			System.out.println("invalid inserted vertices");
+
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public Collection<node_data> getV() 
 	{
-		return (Collection<node_data>) DNodes.clone();
+		return Nodes.values();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public Collection<edge_data> getE(int node_id) 
 	{
-		return (Collection<edge_data>) DEdges.clone();
+		return srcMap.get(node_id).values();
 	}
 
 	@Override
 	public node_data removeNode(int key) 
 	{
-		if(DNodes.containsKey(key))
-			return DNodes.remove(key);
+		if(Nodes.containsKey(key))
+		{
+			changes++;
+			return Nodes.remove(key);
+		}
 		return null;
 	}
 
 	@Override
 	public edge_data removeEdge(int src, int dest) 
 	{
-		int key=DNodes.get(src).hashCode()+DNodes.get(dest).hashCode();
-		if(DEdges.containsKey(key))
-			return DEdges.remove(key);
+		node_data dst=Nodes.get(dest);
+		node_data source=Nodes.get(src);
+		if(source!=null && dst!=null)
+		{
+			edge_data edge=srcMap.get(src).get(dest);
+			if(edge!=null)
+			{
+				changes++;
+				EdgesSize--;
+				return srcMap.get(src).remove(dest);
+			}
+		}
 		return null;
 	}
 
 	@Override
 	public int nodeSize() 
 	{
-		return DNodes.size();
+		return Nodes.size();
 	}
 
 	@Override
 	public int edgeSize() 
 	{
-		return DEdges.size(); 
+		return EdgesSize; 
 	}
 
 	@Override
 	public int getMC() 
 	{
-		return 0;
+		return changes;
+	}
+	public String toString()
+	{
+		String ans="";
+		for(Entry<Integer, HashMap<Integer, edge_data>> e: srcMap.entrySet())
+		{
+			ans+=e.getValue().toString();
+		}
+		return "Edges"+ans+"\n"+"Nodes:\n"+Nodes.toString();
 	}
 
 }

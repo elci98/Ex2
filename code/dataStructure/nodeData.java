@@ -1,10 +1,16 @@
 package dataStructure;
 
+import java.io.Serializable;
+
 import utils.Point3D;
 
-public class nodeData implements node_data 
+public class nodeData implements node_data,Serializable
 {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private Point3D _location;
 	private int _key,_tag;
 	private double _weight;
@@ -73,10 +79,14 @@ public class nodeData implements node_data
 	@Override
 	public void setTag(int t) 
 	{
-		if(t>0)
+		if(t>=0)
 			_tag=t;
 		else
 			System.out.println("invalid inserted tag");
+	}
+	public String toString()
+	{
+		return " "+ _key+"";
 	}
 
 }
