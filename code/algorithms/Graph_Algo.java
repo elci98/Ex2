@@ -1,6 +1,7 @@
 package algorithms;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -15,8 +16,7 @@ import dataStructure.*;
  * @author nuni hagever
  *
  */
-@SuppressWarnings("serial")
-public class Graph_Algo implements graph_algorithms,Serializable
+public class Graph_Algo implements graph_algorithms
 {
 	HashMap<Integer,node_data> Nodes=new HashMap<>();
 	int EdgesSize=0;
@@ -123,38 +123,53 @@ public class Graph_Algo implements graph_algorithms,Serializable
 	//		return true;
 	//	}
 	@Override
-	public double shortestPathDist(int src, int dest) 
+	public double shortestPathDist(int src, int dest)//dijkstra algorithm O(V*E)
 	{
 		node_data current;
 		PriorityQueue<node_data> q=new PriorityQueue<>(Nodes.size(),new Vertex_Comperator());
 		initGraph(src);
 		q.addAll(Nodes.values());
-		while((current=q.remove())!=null)
+		while(!q.isEmpty())
 		{
-			HashMap<Integer,edge_data> map=srcMap.get(current.getKey());
-			for(edge_data edge:map.values())//iterate over all edges going out from current vertex
+			current=q.remove();
+			if(srcMap.containsKey(current.getKey()))
 			{
-				node_data dst=Nodes.get(edge.getDest());
-				if(dst.getInfo().equals("FALSE")) //we skip dst vertex if visited already 
+				HashMap<Integer,edge_data> map=srcMap.get(current.getKey());
+				for(edge_data edge:map.values())//iterate over all edges going out from current vertex
 				{
-					if(current.getWeight()+edge.getWeight()<dst.getWeight())
+					node_data dst=Nodes.get(edge.getDest());
+					if(dst.getInfo().equals("FALSE")) //we skip dst vertex if visited already 
 					{
-						dst.setWeight(edge.getWeight());
-						dst.setTag(current.getKey());//set dst predcessor to be current vertex
+						if(current.getWeight()+edge.getWeight()<dst.getWeight())
+						{
+							dst.setWeight(current.getWeight()+edge.getWeight());
+							dst.setTag(current.getKey());//set dst predcessor to be current vertex
+						}
 					}
 				}
 			}
 			current.setInfo("TRUE");
 		}
-		
-
-		return 0;
+		return Nodes.get(dest).getWeight();
 	}
 
 	@Override
 	public List<node_data> shortestPath(int src, int dest) 
 	{
-		return null;
+		if(shortestPathDist(src,dest)==Double.MAX_VALUE)
+		{
+			System.out.println("there are no edges going out from vertex src");
+			return null;
+		}
+		List<node_data> ans=new ArrayList<>();
+		node_data runner=Nodes.get(dest);
+		while(runner.getKey()!=src)//make us stop after adding drc vertex to the List
+		{
+			ans.add(new nodeData(runner.getLocation(),runner.getKey(),runner.getWeight()));
+			runner=Nodes.get(runner.getTag());
+		}
+		ans.add(Nodes.get(src));
+		return ans;
 	}
 
 	@Override
@@ -185,7 +200,9 @@ public class Graph_Algo implements graph_algorithms,Serializable
 		@Override
 		public int compare(node_data v2,node_data v1)
 		{
-			return (int)(v1.getWeight()-v2.getWeight()); 
+			if(v1.getWeight()-v2.getWeight()>0)
+				return -1;
+			else return 1;
 		}
 	}
 }

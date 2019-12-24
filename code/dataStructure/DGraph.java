@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
+
 public class DGraph implements graph,Serializable
 {
 	/**
@@ -63,7 +64,8 @@ public class DGraph implements graph,Serializable
 	@Override
 	public void connect(int src, int dest, double w) 
 	{
-		assert(w<0):"invalid weight: should be a non negative number";
+		if(w<0)
+			throw new RuntimeException("invalid weight: should be a non negative number");
 		node_data dst=Nodes.get(dest);
 		node_data source=Nodes.get(src);
 
@@ -101,7 +103,9 @@ public class DGraph implements graph,Serializable
 	@Override
 	public Collection<edge_data> getE(int node_id) 
 	{
-		return srcMap.get(node_id).values();
+		if(srcMap.containsKey(node_id))
+			return srcMap.get(node_id).values();
+		return null;
 	}
 
 	@Override
@@ -109,6 +113,12 @@ public class DGraph implements graph,Serializable
 	{
 		if(Nodes.containsKey(key))
 		{
+			srcMap.remove(key);
+			for(Entry<Integer, HashMap<Integer, edge_data>> entry : srcMap.entrySet()) 
+			{
+				if(entry.getValue().containsKey(key))
+					entry.getValue().remove(key);
+			}
 			changes++;
 			return Nodes.remove(key);
 		}

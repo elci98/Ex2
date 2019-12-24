@@ -17,13 +17,11 @@ public class nodeData implements node_data,Serializable
 	private String _info;
 	
 	
-	public nodeData(Point3D location, int key, int tag, double weight, String info)
+	public nodeData(Point3D location, int key, double weight)
 	{
 		_location=location;
 		_key=key;
-		_tag=tag;
 		_weight=weight;
-		_info=info;
 	}
 	@Override
 	public int getKey() 
@@ -52,7 +50,7 @@ public class nodeData implements node_data,Serializable
 	@Override
 	public void setWeight(double w) 
 	{
-		if(w>0)
+		if(w>=0)
 			_weight=w;
 		else
 			System.out.println("invalid inserted weight");
@@ -79,7 +77,7 @@ public class nodeData implements node_data,Serializable
 	@Override
 	public void setTag(int t) 
 	{
-		if(t>=0)
+		if(t>=0 || t == -1)
 			_tag=t;
 		else
 			System.out.println("invalid inserted tag");
