@@ -1,8 +1,12 @@
 package Tests;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import algorithms.Graph_Algo;
 import dataStructure.DGraph;
-import dataStructure.nodeData;
+import dataStructure.node_data;
+import elements.nodeData;
 import utils.Point3D;
 
 public class Main {
@@ -25,9 +29,18 @@ public class Main {
 		x.connect(m.getKey(), v.getKey(), 1);
 		Graph_Algo g = new Graph_Algo();
 		g.init(x);
+		List<Integer> list=new ArrayList<>();
+		for(node_data node :x.getV())
+			list.add(node.getKey());
+		//		g.save("graph.txt");
+
+//		System.out.println(g+"\n-------------\n"+x);
+		System.out.println(g.shortestPath(1, 2));
+//		System.out.println(g.TSP(list).toString());
+	
 //		g.save("graph.txt");
 //		System.out.println(g+"\n-------------\n"+x);
-		System.out.println(g.shortestPath(1, 3));
+		System.out.println(g.TSP(list));
 	}
 
 }

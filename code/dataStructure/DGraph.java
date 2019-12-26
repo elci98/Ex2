@@ -5,6 +5,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
+import elements.edgeData;
+import elements.nodeData;
+
 
 public class DGraph implements graph,Serializable
 {
@@ -69,7 +72,7 @@ public class DGraph implements graph,Serializable
 		node_data dst=Nodes.get(dest);
 		node_data source=Nodes.get(src);
 
-		edgeData value=new edgeData(source, dst, w, 0, "");
+		edgeData value=new edgeData(source, dst, w);
 		if(source!=null && dst!=null && srcMap.containsKey(src))
 		{
 			if(!srcMap.get(src).containsKey(dest))

@@ -3,13 +3,17 @@ package algorithms;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.PriorityQueue;
 
 import dataStructure.*;
+import elements.nodeData;
 /**
  * This empty class represents the set of graph-theory algorithms
  * which should be implemented as part of Ex2 - Do edit this class.
@@ -27,8 +31,14 @@ public class Graph_Algo implements graph_algorithms
 	{
 
 	}
+	/**
+	 * θ(n*m)n=num of vertices,m=num of edges
+	 * this method gives the option to initialize graph from the given graph
+	 * @param dGraph- the graph we`re going to preform algorithms
+	 * 
+	 * */
 	@Override
-	public void init(graph g) //θ(n*m)n=num of vertices,m=num of edges
+	public void init(graph g) 
 	{
 		for(node_data vertex :g.getV()) //iterate over all vertices
 		{
@@ -49,6 +59,10 @@ public class Graph_Algo implements graph_algorithms
 		dGraph=new DGraph(Nodes,EdgesSize,srcMap);
 	}
 
+	/**
+	 * initialize graph from given serializable file
+	 * @param file_name
+	 * */
 	@Override
 	public void init(String file_name) 
 	{
@@ -66,7 +80,10 @@ public class Graph_Algo implements graph_algorithms
 
 
 	}
-
+	/**
+	 * save the current graph to Serialziable file
+	 * @param file_name
+	 * */
 	@Override
 	public void save(String file_name) 
 	{
@@ -82,48 +99,38 @@ public class Graph_Algo implements graph_algorithms
 			e.printStackTrace();
 		}
 	}
+	/**
+	 * this method checks whether the graph is strongly connected
+	 * @return true if the graph is strongly connected, false otherwise
+	 * 
+	 * */
+
 
 	@Override
 	public boolean isConnected() 
 	{
 		if(srcMap.size()<Nodes.size())return false;//i.e this graph has vertex with no edges coming out from
-		//		for(Entry<Integer, HashMap<Integer, edge_data>> edges: srcMap.entrySet())
-		//		{
-		//
-		//
-		//		}
 
+		for (node_data node : dGraph.getV())
+		{
+			node.setTag(1);
+			isConnected_Recursive(dGraph.getE(node.getKey()));
+			if(!checkTag())
+				return false;
+		}
 		return true;
 	}
-	private void initGraph(int src)
-	{
-		for(Entry<Integer, node_data> entry : Nodes.entrySet()) 
-		{
-			entry.getValue().setTag(-1);//Tag contains the predecessor`s id
-			entry.getValue().setInfo("FALSE");//info contains boolean visited or not
-			if(entry.getValue().getKey()==src)
-				entry.getValue().setWeight(0);//set src vertex`s weight to 0
-			else
-				entry.getValue().setWeight(Double.MAX_VALUE);//setting all Nodes weight to infinity
-		}
-	}
-	//		private boolean connected(int id, Collection<edge_data> edges)
-	//		{
-	//			
-	//			return false;
-	//		}
-	//
-	//	private boolean tagCheck() 
-	//	{
-	//		for(Entry<Integer, node_data> entry : Nodes.entrySet()) 
-	//		{
-	//			if(entry.getValue().getTag()!=1)
-	//				return false;
-	//		}
-	//		return true;
-	//	}
+
+
+	/**
+	 * Dijkstra algorithm for finding the shortest path from vertex src to vertex dest
+	 * @param src
+	 * @param dest
+	 * 
+	 * */
+
 	@Override
-	public double shortestPathDist(int src, int dest)//dijkstra algorithm O(V*E)
+	public double shortestPathDist(int src, int dest)
 	{
 		node_data current;
 		PriorityQueue<node_data> q=new PriorityQueue<>(Nodes.size(),new Vertex_Comperator());
@@ -152,7 +159,10 @@ public class Graph_Algo implements graph_algorithms
 		}
 		return Nodes.get(dest).getWeight();
 	}
-
+	/**
+	 * this method uses shortestPathDist method and return a list contains all vertices
+	 * we`ve past through on the shortest path from src to dest
+	 * */
 	@Override
 	public List<node_data> shortestPath(int src, int dest) 
 	{
@@ -169,34 +179,111 @@ public class Graph_Algo implements graph_algorithms
 			runner=Nodes.get(runner.getTag());
 		}
 		ans.add(Nodes.get(src));
+		Collections.reverse(ans);
 		return ans;
 	}
-
+	/**
+	 * computes a relatively short path which visit each node in the targets List.
+	 * Note: this is NOT the classical traveling salesman problem, 
+	 * as you can visit a node more than once, and there is no need to return to source node - 
+	 * just a path going over all nodes in the list. 
+	 * @param targets
+	 * @return
+	 */
 	@Override
 	public List<node_data> TSP(List<Integer> targets) 
 	{
-		return null;
+		if(!isConnected())return null;
+		List<node_data> TSP = new LinkedList<node_data>();
+		Iterator<Integer> i = targets.iterator();
+		int src=i.next();
+		TSP.add(0,dGraph.getNode(src));
+		while(i.hasNext()) 
+		{
+			int dest=i.next();
+			List<node_data> nodePath = new LinkedList<node_data>(shortestPath(src,dest));
+			nodePath.remove(0);//avoid duplicates
+			TSP.addAll(nodePath);
+			src=dest;
+		}
+		return TSP;
 	}
-
+	/**
+	 * this method return a deep copy of current graph
+	 * 
+	 * */
 	@Override
 	public graph copy() 
 	{
 		graph g=new DGraph(Nodes,EdgesSize,srcMap);
 		return g;
 	}
+	@Override
 	public String toString()
 	{
 		return dGraph.toString();
 	}
-
-
+	//====================================Auxiliary methods============================
+	/**
+	 * Auxiliary recursive function for isConnected method
+	 * 
+	 * */
+	private void isConnected_Recursive(Collection<edge_data> edge)
+	{
+		for(edge_data node : edge)
+		{
+			node.setTag(1);
+			if(dGraph.getNode(node.getDest())!=null 
+			&& dGraph.getNode(node.getDest()).getTag()!=1
+			&& dGraph.getE(node.getDest()) != null)
+				isConnected_Recursive(dGraph.getE(node.getDest()));
+		}
+	}
+	
+	private boolean checkTag()
+	{
+		for(node_data nodeCur :  dGraph.getV())
+		{ 
+			if(nodeCur.getTag() != 1)
+				return false;
+			else
+				nodeCur.setTag(-1);
+		}
+		return true;
+	}
+	/**
+	 * Auxiliary method for Dijkstra algorithm
+	 * set all vertices Tag to -1
+	 * set all vertices Info to FALSE
+	 * set all vertices weight to infinity except src vertex(the starting vertex)
+	 * @param src
+	 * 
+	 * */ 
+	private void initGraph(int src)
+	{
+		for(Entry<Integer, node_data> entry : Nodes.entrySet()) 
+		{
+			entry.getValue().setTag(-1);//Tag contains the predecessor`s id
+			entry.getValue().setInfo("FALSE");//info contains boolean visited or not
+			if(entry.getValue().getKey()==src)
+				entry.getValue().setWeight(0);//set src vertex`s weight to 0
+			else
+				entry.getValue().setWeight(Double.MAX_VALUE);//setting all Nodes weight to infinity
+		}
+	}
+	//==========================Inner=Class=========================
+	
+	/**
+	 * private inner class for comperator
+	 * @method compare - compares between two vertices by weight
+	 * 		
+	 * */
 	private class Vertex_Comperator implements Comparator<node_data> 
 	{
 		public Vertex_Comperator()
 		{
 
 		}
-
 		@Override
 		public int compare(node_data v2,node_data v1)
 		{
