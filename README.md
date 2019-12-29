@@ -17,4 +17,4 @@
 
 <a href="http://www.siz.co.il/"><img src="http://up419.siz.co.il/up3/zymuzznmwjyn.png" border="0" alt="graph" /></a>
 
-# for more info enter our wiki! :-)
+# for more info enter our wiki!  https://github.com/elci98/Ex2/wiki  :-)
