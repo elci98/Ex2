@@ -13,7 +13,7 @@ public class nodeData implements node_data,Serializable
 	 */
 	private static final long serialVersionUID = 1L;
 	private Point3D _location;
-	private int _key,_tag;
+	private int _key,_tag=-1;
 	private double _weight;
 	private String _info;
 	

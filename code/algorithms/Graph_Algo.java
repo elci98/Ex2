@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.PriorityQueue;
 
 import dataStructure.*;
@@ -22,10 +21,7 @@ import elements.nodeData;
  */
 public class Graph_Algo implements graph_algorithms
 {
-	HashMap<Integer,node_data> Nodes=new HashMap<>();
-	int EdgesSize=0;
-	HashMap<Integer,HashMap<Integer,edge_data>> srcMap=new HashMap<>();
-	graph dGraph;
+	private graph dGraph;
 
 	public Graph_Algo()
 	{
@@ -40,23 +36,7 @@ public class Graph_Algo implements graph_algorithms
 	@Override
 	public void init(graph g) 
 	{
-		for(node_data vertex :g.getV()) //iterate over all vertices
-		{
-			HashMap<Integer,edge_data> map=new HashMap<>();
-			int key = vertex.getKey();
-			Nodes.put(key, vertex); // input current vertex to Nodes HashMap
-			Collection<edge_data> edges=g.getE(key);
-			if(edges!=null)
-			{
-				for(edge_data edge : edges) //iterate over all edges related to vertex 
-				{
-					map.put(edge.getDest(), edge);
-					EdgesSize++;
-				}
-				srcMap.put(key, map);//input current vertex to srcMap ,i.e current vertex is source
-			}
-		}
-		dGraph=new DGraph(Nodes,EdgesSize,srcMap);
+		dGraph=g;
 	}
 
 	/**
@@ -109,7 +89,6 @@ public class Graph_Algo implements graph_algorithms
 	@Override
 	public boolean isConnected() 
 	{
-		if(srcMap.size()<Nodes.size())return false;//i.e this graph has vertex with no edges coming out from
 
 		for (node_data node : dGraph.getV())
 		{
@@ -133,18 +112,18 @@ public class Graph_Algo implements graph_algorithms
 	public double shortestPathDist(int src, int dest)
 	{
 		node_data current;
-		PriorityQueue<node_data> q=new PriorityQueue<>(Nodes.size(),new Vertex_Comperator());
+		PriorityQueue<node_data> q=new PriorityQueue<>(dGraph.nodeSize(),new Vertex_Comperator());
 		initGraph(src);
-		q.addAll(Nodes.values());
+		q.addAll(dGraph.getV());
 		while(!q.isEmpty())
 		{
 			current=q.remove();
-			if(srcMap.containsKey(current.getKey()))
+			if(dGraph.getNode(current.getKey())!=null)
 			{
-				HashMap<Integer,edge_data> map=srcMap.get(current.getKey());
-				for(edge_data edge:map.values())//iterate over all edges going out from current vertex
+				Collection<edge_data> map=dGraph.getE(current.getKey());
+				for(edge_data edge : map)//iterate over all edges going out from current vertex
 				{
-					node_data dst=Nodes.get(edge.getDest());
+					node_data dst=dGraph.getNode(edge.getDest());
 					if(dst.getInfo().equals("FALSE")) //we skip dst vertex if visited already 
 					{
 						if(current.getWeight()+edge.getWeight()<dst.getWeight())
@@ -157,7 +136,7 @@ public class Graph_Algo implements graph_algorithms
 			}
 			current.setInfo("TRUE");
 		}
-		return Nodes.get(dest).getWeight();
+		return dGraph.getNode(dest).getWeight();
 	}
 	/**
 	 * this method uses shortestPathDist method and return a list contains all vertices
@@ -172,13 +151,13 @@ public class Graph_Algo implements graph_algorithms
 			return null;
 		}
 		List<node_data> ans=new ArrayList<>();
-		node_data runner=Nodes.get(dest);
+		node_data runner=dGraph.getNode(dest);
 		while(runner.getKey()!=src)//make us stop after adding drc vertex to the List
 		{
 			ans.add(new nodeData(runner.getLocation(),runner.getKey(),runner.getWeight()));
-			runner=Nodes.get(runner.getTag());
+			runner=dGraph.getNode(runner.getTag());
 		}
-		ans.add(Nodes.get(src));
+		ans.add(dGraph.getNode(src));
 		Collections.reverse(ans);
 		return ans;
 	}
@@ -215,6 +194,27 @@ public class Graph_Algo implements graph_algorithms
 	@Override
 	public graph copy() 
 	{
+		HashMap<Integer,node_data> Nodes=new HashMap<>();
+		int EdgesSize=0;
+		HashMap<Integer,HashMap<Integer,edge_data>> srcMap=new HashMap<>();
+		
+		for(node_data vertex :dGraph.getV()) //iterate over all vertices
+		{
+			HashMap<Integer,edge_data> map=new HashMap<>();
+			int key = vertex.getKey();
+			Nodes.put(key, vertex); // input current vertex to Nodes HashMap
+			Collection<edge_data> edges=dGraph.getE(key);
+			if(edges!=null)
+			{
+				for(edge_data edge : edges) //iterate over all edges related to vertex 
+				{
+					map.put(edge.getDest(), edge);
+					EdgesSize++;
+				}
+				srcMap.put(key, map);//input current vertex to srcMap ,i.e current vertex is source
+			}
+		}
+		
 		graph g=new DGraph(Nodes,EdgesSize,srcMap);
 		return g;
 	}
@@ -230,21 +230,22 @@ public class Graph_Algo implements graph_algorithms
 	 * */
 	private void isConnected_Recursive(Collection<edge_data> edge)
 	{
-		for(edge_data node : edge)
+		for(edge_data e : edge)
 		{
-			node.setTag(1);
-			if(dGraph.getNode(node.getDest())!=null 
-			&& dGraph.getNode(node.getDest()).getTag()!=1
-			&& dGraph.getE(node.getDest()) != null)
-				isConnected_Recursive(dGraph.getE(node.getDest()));
+			if(dGraph.getNode(e.getDest()).getTag() == -1 )
+			{
+				dGraph.getNode(e.getDest()).setTag(1);
+				isConnected_Recursive(dGraph.getE(e.getDest()));
+			}
 		}
+		return;
 	}
-	
+
 	private boolean checkTag()
 	{
 		for(node_data nodeCur :  dGraph.getV())
 		{ 
-			if(nodeCur.getTag() != 1)
+			if(nodeCur.getTag() == -1)
 				return false;
 			else
 				nodeCur.setTag(-1);
@@ -261,18 +262,18 @@ public class Graph_Algo implements graph_algorithms
 	 * */ 
 	private void initGraph(int src)
 	{
-		for(Entry<Integer, node_data> entry : Nodes.entrySet()) 
+		for(node_data v : dGraph.getV()) 
 		{
-			entry.getValue().setTag(-1);//Tag contains the predecessor`s id
-			entry.getValue().setInfo("FALSE");//info contains boolean visited or not
-			if(entry.getValue().getKey()==src)
-				entry.getValue().setWeight(0);//set src vertex`s weight to 0
+			v.setTag(-1);//Tag contains the predecessor`s id
+			v.setInfo("FALSE");//info contains boolean visited or not
+			if(v.getKey()==src)
+				v.setWeight(0);//set src vertex`s weight to 0
 			else
-				entry.getValue().setWeight(Double.MAX_VALUE);//setting all Nodes weight to infinity
+				v.setWeight(Double.MAX_VALUE);//setting all Nodes weight to infinity
 		}
 	}
 	//==========================Inner=Class=========================
-	
+
 	/**
 	 * private inner class for comperator
 	 * @method compare - compares between two vertices by weight

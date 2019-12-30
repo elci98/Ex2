@@ -21,9 +21,9 @@ public class DGraph implements graph,Serializable
 	 * 
 	 * */
 	private int changes=0;
-	HashMap<Integer,node_data> Nodes=new HashMap<>(); // list of all nodes
-	int EdgesSize=0;// number of all edges
-	HashMap<Integer,HashMap<Integer,edge_data>> srcMap=new HashMap<>();//list of all source vertices contains a list of their edges and destination
+	private HashMap<Integer,node_data> Nodes=new HashMap<>(); // list of all nodes
+	private int EdgesSize=0;// number of all edges
+	private HashMap<Integer,HashMap<Integer,edge_data>> srcMap=new HashMap<>();//list of all source vertices contains a list of their edges and destination
 	public DGraph()
 	{
 
@@ -45,7 +45,9 @@ public class DGraph implements graph,Serializable
 	@Override
 	public edge_data getEdge(int src, int dest) 
 	{
-		return srcMap.get(src).get(dest);
+		if(srcMap.containsKey(src))
+			return srcMap.get(src).get(dest);
+		return null;
 	}
 
 	@Override
@@ -133,7 +135,7 @@ public class DGraph implements graph,Serializable
 	{
 		node_data dst=Nodes.get(dest);
 		node_data source=Nodes.get(src);
-		if(source!=null && dst!=null)
+		if(source!=null && dst!=null && srcMap.containsKey(src))
 		{
 			edge_data edge=srcMap.get(src).get(dest);
 			if(edge!=null)
