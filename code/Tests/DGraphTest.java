@@ -3,10 +3,10 @@ package Tests;
 import static org.junit.jupiter.api.Assertions.*;
 import java.util.Collection;
 
-import org.junit.FixMethodOrder;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.runners.MethodSorters;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 
 import dataStructure.DGraph;
 import dataStructure.edge_data;
@@ -14,15 +14,15 @@ import dataStructure.node_data;
 import elements.nodeData;
 import utils.Point3D;
 
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
+@TestInstance(Lifecycle.PER_CLASS) // allows to declare BeforeAll params as non-static
 class DGraphTest 
 {
-	static DGraph dg=new DGraph();
-	static Point3D [] points=new Point3D[10];
-	static nodeData []vertices=new nodeData[10];
+	DGraph dg=new DGraph();
+	Point3D [] points=new Point3D[10];
+	nodeData []vertices=new nodeData[10];
 
 	@BeforeAll
-	static void init()
+	void init()
 	{
 		for(int i=0;i<10;i++)
 		{
@@ -41,7 +41,7 @@ class DGraphTest
 	@Test
 	void getNodeTest()
 	{
-		for(int i= 0;i<10;i++)
+		for(int i=0;i<10;i++)
 		{
 			node_data n=vertices[i];
 			assertTrue(n!=null);
@@ -86,7 +86,7 @@ class DGraphTest
 	void getVTest()
 	{
 		Collection<node_data> vrtx=dg.getV();
-		for(int i=0;i<1;i++)
+		for(int i=0;i<vrtx.size();i++)
 		{
 			assertTrue(vrtx.contains(vertices[i]));
 		}
@@ -119,25 +119,55 @@ class DGraphTest
 	{
 		assertEquals(8, dg.edgeSize());
 	}
+	
+	/**
+	 * those two tests are independent,
+	 * since the removal of edges or vertices from the global graph causes bugs.
+	 * 
+	 * */
 	@Test
 	void testRemoveNode()
 	{
+		DGraph d=new DGraph();
+		Point3D [] p=new Point3D[10];
+		nodeData []v=new nodeData[10];
+		for(int i=0;i<10;i++)
+		{
+			p[i]=new Point3D (i,i+1);
+			v[i]=new nodeData(p[i],i,0);
+			d.addNode(v[i]);
+		}
+		
 		for(int i=0;i<10;i++) 
 		{
-			dg.removeNode(i);
-			assertEquals(null, dg.getNode(i));
+			d.removeNode(i);
+			assertEquals(null, d.getNode(i));
 		}
 	}
 
 	@Test
-	void testRemoveEdge()
+	void testRemoveEdge()  
 	{
+		DGraph d=new DGraph();
+		Point3D [] p=new Point3D[10];
+		nodeData []v=new nodeData[10];
+		for(int i=0;i<10;i++)
+		{
+			p[i]=new Point3D (i,i+1);
+			v[i]=new nodeData(p[i],i,0);
+			d.addNode(v[i]);
+		}
 		for(int i=1;i<5;i++)
 		{
-			dg.removeEdge(i, 2*i);
-			dg.removeEdge(2*i-1, i+1);
-			assertEquals(null,dg.getEdge(i, 2*i));
-			assertEquals(null,dg.getEdge(2*i-1, i+1));
+			d.connect(i+1, 2*i, 2*i);
+			d.connect(2*i-1, i+1, 4*i);
+		}
+		for(int i=1;i<5;i++)
+		{
+			d.removeEdge(i, 2*i);
+			d.removeEdge(2*i-1, i+1);
+			assertEquals(null,d.getEdge(i, 2*i));
+			assertEquals(null,d.getEdge(2*i-1, i+1));
 		}
 	}
 

@@ -117,6 +117,7 @@ public class Graph_Algo implements graph_algorithms
 		q.addAll(dGraph.getV());
 		while(!q.isEmpty())
 		{
+			
 			current=q.remove();
 			if(dGraph.getNode(current.getKey())!=null)
 			{
@@ -128,8 +129,10 @@ public class Graph_Algo implements graph_algorithms
 					{
 						if(current.getWeight()+edge.getWeight()<dst.getWeight())
 						{
+							q.remove(dst);
 							dst.setWeight(current.getWeight()+edge.getWeight());
 							dst.setTag(current.getKey());//set dst predcessor to be current vertex
+							q.add(dst);
 						}
 					}
 				}
@@ -286,11 +289,11 @@ public class Graph_Algo implements graph_algorithms
 
 		}
 		@Override
-		public int compare(node_data v2,node_data v1)
+		public int compare(node_data v1,node_data v2)
 		{
-			if(v1.getWeight()-v2.getWeight()>0)
-				return -1;
-			else return 1;
+			if(v2.getWeight()<v1.getWeight())
+				return 1;
+			else return -1;
 		}
 	}
 }

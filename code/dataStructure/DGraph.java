@@ -24,6 +24,7 @@ public class DGraph implements graph,Serializable
 	private HashMap<Integer,node_data> Nodes=new HashMap<>(); // list of all nodes
 	private int EdgesSize=0;// number of all edges
 	private HashMap<Integer,HashMap<Integer,edge_data>> srcMap=new HashMap<>();//list of all source vertices contains a list of their edges and destination
+	
 	public DGraph()
 	{
 

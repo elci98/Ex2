@@ -2,13 +2,17 @@ package Tests;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import org.junit.FixMethodOrder;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.runners.MethodSorters;
 
 import elements.nodeData;
 import utils.Point3D;
 
-class nodeDataTest {
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
+class nodeDataTest 
+{
 
 	static Point3D p;
 	static nodeData[] node =new nodeData[10];
@@ -42,7 +46,7 @@ class nodeDataTest {
 	}
 
 	@Test
-	void testGetLocation() 
+	void getLocationTest() 
 	{
 		for(int i=0;i<10;i++)
 		{
@@ -82,7 +86,7 @@ class nodeDataTest {
 	}
 
 	@Test
-	void testGetWeight() 
+	void getWeightTest() 
 	{
 		for(int i=0;i<10;i++)
 		{
