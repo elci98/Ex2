@@ -200,13 +200,13 @@ public class Graph_GUI extends Graph_Algo
 		g.connect(13, 2, 98.6);
 	
 		Graph_GUI gu=new Graph_GUI(g);
-//		Range rx=new Range(-8,9);
-//		Range ry=new Range(-6,10);
+		Range rx=new Range(-8,9);
+		Range ry=new Range(-6,10);
 //		gu.drawGraph(750,750,rx,ry);
 		
 		System.out.println(gu.isConnected());
-		g.removeEdge(13, 2);
-//		gu.drawGraph(750,750,rx,ry);
+//		g.removeEdge(13, 2);
+		gu.drawGraph(750,750,rx,ry);
 		System.out.println(gu.isConnected());
 		System.out.println(gu.shortestPathDist(1, 11));
 		System.out.println(gu.shortestPath(1, 11));

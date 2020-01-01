@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -27,12 +28,12 @@ public class Graph_Algo implements graph_algorithms
 	{
 
 	}
-	/**
-	 * θ(n*m)n=num of vertices,m=num of edges
-	 * this method gives the option to initialize graph from the given graph
-	 * @param dGraph- the graph we`re going to preform algorithms
-	 * 
-	 * */
+	
+	public Graph_Algo(graph g) 
+	{
+		dGraph=g;
+	}
+
 	@Override
 	public void init(graph g) 
 	{
@@ -57,9 +58,8 @@ public class Graph_Algo implements graph_algorithms
 		{
 			e.printStackTrace();
 		}
-
-
 	}
+	
 	/**
 	 * save the current graph to Serialziable file
 	 * @param file_name
@@ -79,17 +79,19 @@ public class Graph_Algo implements graph_algorithms
 			e.printStackTrace();
 		}
 	}
+	
 	/**
 	 * this method checks whether the graph is strongly connected
 	 * @return true if the graph is strongly connected, false otherwise
 	 * 
 	 * */
-
-
 	@Override
 	public boolean isConnected() 
 	{
-
+		for (node_data node : dGraph.getV())
+		{
+			node.setTag(-1);
+		}
 		for (node_data node : dGraph.getV())
 		{
 			node.setTag(1);
@@ -100,14 +102,12 @@ public class Graph_Algo implements graph_algorithms
 		return true;
 	}
 
-
 	/**
 	 * Dijkstra algorithm for finding the shortest path from vertex src to vertex dest
 	 * @param src
 	 * @param dest
 	 * 
 	 * */
-
 	@Override
 	public double shortestPathDist(int src, int dest)
 	{
@@ -117,7 +117,6 @@ public class Graph_Algo implements graph_algorithms
 		q.addAll(dGraph.getV());
 		while(!q.isEmpty())
 		{
-			
 			current=q.remove();
 			if(dGraph.getNode(current.getKey())!=null)
 			{
@@ -129,9 +128,10 @@ public class Graph_Algo implements graph_algorithms
 					{
 						if(current.getWeight()+edge.getWeight()<dst.getWeight())
 						{
-							q.remove(dst);
+							q.remove(dst); //we remove the element from queue 
 							dst.setWeight(current.getWeight()+edge.getWeight());
 							dst.setTag(current.getKey());//set dst predcessor to be current vertex
+							//after element's weight update we push it back to the queue so the descending order will maintained.
 							q.add(dst);
 						}
 					}
@@ -141,9 +141,11 @@ public class Graph_Algo implements graph_algorithms
 		}
 		return dGraph.getNode(dest).getWeight();
 	}
+	
 	/**
 	 * this method uses shortestPathDist method and return a list contains all vertices
 	 * we`ve past through on the shortest path from src to dest
+	 * 
 	 * */
 	@Override
 	public List<node_data> shortestPath(int src, int dest) 
@@ -164,6 +166,7 @@ public class Graph_Algo implements graph_algorithms
 		Collections.reverse(ans);
 		return ans;
 	}
+	
 	/**
 	 * computes a relatively short path which visit each node in the targets List.
 	 * Note: this is NOT the classical traveling salesman problem, 
@@ -175,24 +178,33 @@ public class Graph_Algo implements graph_algorithms
 	@Override
 	public List<node_data> TSP(List<Integer> targets) 
 	{
-		if(!isConnected())return null;
+		graph subGraph=subGraph(targets); //buils a sub graph containing only relevant verticex and edges.
+		Graph_Algo temp=new Graph_Algo(subGraph);
+		if(!temp.isConnected())return null;//check if the sub graph is connected.
+		HashSet<Integer> bool=new HashSet<Integer>();
 		List<node_data> TSP = new LinkedList<node_data>();
 		Iterator<Integer> i = targets.iterator();
 		int src=i.next();
-		TSP.add(0,dGraph.getNode(src));
+		TSP.add(0,subGraph.getNode(src));
 		while(i.hasNext()) 
 		{
 			int dest=i.next();
-			List<node_data> nodePath = new LinkedList<node_data>(shortestPath(src,dest));
-			nodePath.remove(0);//avoid duplicates
-			TSP.addAll(nodePath);
-			src=dest;
+			if(!bool.contains(dest))
+			{
+				List<node_data> nodePath = shortestPath(src,dest);
+				nodePath.remove(0);//avoid duplicates
+				TSP.addAll(nodePath);
+				//store vertices keys in HashSet to skip the option of trying to visit a vertex we already visited.
+				for(node_data n:nodePath)
+					bool.add(n.getKey());
+				src=dest;
+			}
 		}
 		return TSP;
 	}
+
 	/**
-	 * this method return a deep copy of current graph
-	 * 
+	 * this method return a deep copy of current graph.
 	 * */
 	@Override
 	public graph copy() 
@@ -200,7 +212,7 @@ public class Graph_Algo implements graph_algorithms
 		HashMap<Integer,node_data> Nodes=new HashMap<>();
 		int EdgesSize=0;
 		HashMap<Integer,HashMap<Integer,edge_data>> srcMap=new HashMap<>();
-		
+
 		for(node_data vertex :dGraph.getV()) //iterate over all vertices
 		{
 			HashMap<Integer,edge_data> map=new HashMap<>();
@@ -217,19 +229,69 @@ public class Graph_Algo implements graph_algorithms
 				srcMap.put(key, map);//input current vertex to srcMap ,i.e current vertex is source
 			}
 		}
-		
+
 		graph g=new DGraph(Nodes,EdgesSize,srcMap);
 		return g;
 	}
+	
 	@Override
 	public String toString()
 	{
 		return dGraph.toString();
 	}
-	//====================================Auxiliary methods============================
+	//====================================Auxiliary methods============================	
+	
+	@Override
+	public boolean equals(Object o)
+	{
+		return this.toString().equals(o.toString());
+	}
+	/**
+	 * this method creates sub graph from the current one. 
+	 * including only vertices that in targets list,
+	 * and edges which their src vertex and dest vertex are in targets list.
+	 * 
+	 * */
+	private graph subGraph(List<Integer> targets) 
+	{
+		for(Integer key :targets) //make sure that all vertices keys in targets are all part of the full graph
+		{
+			if(dGraph.getNode(key)==null)
+				return null;
+		}
+		HashMap<Integer,node_data> Nodes=new HashMap<>();
+		int EdgesSize=0;
+		HashMap<Integer,HashMap<Integer,edge_data>> srcMap=new HashMap<>();
+
+		for(node_data vertex :dGraph.getV()) //iterate over all vertices in the graph
+		{
+			int key = vertex.getKey();
+			if(targets.contains(key)) //if current src vertex exists in subGraph vertices list
+			{
+				Nodes.put(key, vertex); // input current vertex to Nodes HashMap
+				HashMap<Integer,edge_data> map=new HashMap<>();
+				Collection<edge_data> edges=dGraph.getE(key);
+				if(edges!=null)
+				{
+					for(edge_data edge : edges) //iterate over all edges related to vertex 
+					{
+						//add the current edge to new subGraph <==> src vertex and dest vertex exists in subGraph vertices list
+						if(targets.contains(edge.getDest()) && targets.contains(edge.getSrc())) 
+						{
+							map.put(edge.getDest(), edge);
+							EdgesSize++;
+						}
+					}
+					srcMap.put(key, map);//input current vertex to srcMap ,i.e current vertex is source
+				}
+			}
+		}
+		graph g=new DGraph(Nodes,EdgesSize,srcMap);
+		return g;
+	}
+	
 	/**
 	 * Auxiliary recursive function for isConnected method
-	 * 
 	 * */
 	private void isConnected_Recursive(Collection<edge_data> edge)
 	{
@@ -246,15 +308,16 @@ public class Graph_Algo implements graph_algorithms
 
 	private boolean checkTag()
 	{
-		for(node_data nodeCur :  dGraph.getV())
+		for(node_data node :  dGraph.getV())
 		{ 
-			if(nodeCur.getTag() == -1)
+			if(node.getTag() == -1)
 				return false;
 			else
-				nodeCur.setTag(-1);
+				node.setTag(-1);
 		}
 		return true;
 	}
+	
 	/**
 	 * Auxiliary method for Dijkstra algorithm
 	 * set all vertices Tag to -1

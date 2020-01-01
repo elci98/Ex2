@@ -2,12 +2,10 @@ package Tests;
 
 import static org.junit.jupiter.api.Assertions.*;
 import java.util.Collection;
-
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
-
 import dataStructure.DGraph;
 import dataStructure.edge_data;
 import dataStructure.node_data;
@@ -37,7 +35,6 @@ class DGraphTest
 		}
 	}
 
-
 	@Test
 	void getNodeTest()
 	{
@@ -56,8 +53,6 @@ class DGraphTest
 			assertNotEquals(null, dg.getEdge(i+1, 2*i));
 			assertNotEquals(null, dg.getEdge(2*i-1, i+1));
 		}
-
-
 	}
 	@Test
 	void getEdge()
@@ -69,7 +64,6 @@ class DGraphTest
 			assertTrue(edge1!=null);
 			assertTrue(edge2!=null);
 		}
-
 	}
 
 	@Test
@@ -80,7 +74,6 @@ class DGraphTest
 			assertNotEquals(null, dg.getNode(i));
 		}
 	}
-
 
 	@Test
 	void getVTest()
@@ -121,10 +114,11 @@ class DGraphTest
 	}
 	
 	/**
-	 * those two tests are independent,
+	 * those two tests (RemoveEdge,RemoveNode) are independent,
 	 * since the removal of edges or vertices from the global graph causes bugs.
 	 * 
 	 * */
+	
 	@Test
 	void testRemoveNode()
 	{
@@ -137,7 +131,6 @@ class DGraphTest
 			v[i]=new nodeData(p[i],i,0);
 			d.addNode(v[i]);
 		}
-		
 		for(int i=0;i<10;i++) 
 		{
 			d.removeNode(i);
@@ -171,13 +164,9 @@ class DGraphTest
 		}
 	}
 
-
-
 	@Test
 	void testGetMC()
 	{
 		assertEquals(18,dg.getMC());
 	}
-
-
 }

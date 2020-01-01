@@ -2,20 +2,17 @@ package Tests;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.FixMethodOrder;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.runners.MethodSorters;
 
 import elements.nodeData;
 import utils.Point3D;
 
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 class nodeDataTest 
 {
-
 	static Point3D p;
 	static nodeData[] node =new nodeData[10];
+	
 	@BeforeAll
 	static void init()
 	{
@@ -25,6 +22,7 @@ class nodeDataTest
 			node[i]=new nodeData(p,i,0);
 		}
 	}
+	
 	@Test
 	void testNodeData() 
 	{
@@ -66,20 +64,26 @@ class nodeDataTest
 	void testSetLocation() 
 	{
 		Point3D p1;
-		for(int i=0;i<10;i++)
+		nodeData [] n=new nodeData[10];
+		for(int i= 0 ; i <10 ;i++)
 		{
-			p1=new Point3D(4*i,5*i,6*i);
-			node[i].setLocation(p1);
+			p1=new Point3D(i,2*i,3*i);
+			n[i]=new nodeData(p1,i,0);
 		}
 		for(int i=0;i<10;i++)
 		{
-			int actual=node[i].getLocation().ix();
+			p1=new Point3D(4*i,5*i,6*i);
+			n[i].setLocation(p1);
+		}
+		for(int i=0;i<10;i++)
+		{
+			int actual=n[i].getLocation().ix();
 			int expected=4*i;
 			assertEquals(expected,actual);
-			actual=node[i].getLocation().iy();
+			actual=n[i].getLocation().iy();
 			expected=5*i;
 			assertEquals(expected,actual);
-			actual=node[i].getLocation().iz();
+			actual=n[i].getLocation().iz();
 			expected=6*i;
 			assertEquals(expected,actual);
 		}
@@ -94,12 +98,18 @@ class nodeDataTest
 			double expected=0;
 			assertEquals(expected,actual);	
 		}
-		
 	}
 
 	@Test
 	void testSetWeight() 
 	{
+		Point3D p1;
+		nodeData [] noded=new nodeData[10];
+		for(int i=0;i<10;i++)
+		{
+			p1=new Point3D(i,2*i,3*i);
+			noded[i]=new nodeData(p1,i,0);
+		}
 		for(int i=0;i<10;i++)
 		{
 			node[i].setWeight(i*0.5);
@@ -111,5 +121,4 @@ class nodeDataTest
 			assertEquals(expected,actual);	
 		}
 	}
-
 }

@@ -1,13 +1,12 @@
 package Tests;
 
 import static org.junit.jupiter.api.Assertions.*;
-
-import org.junit.FixMethodOrder;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
-
 import algorithms.Graph_Algo;
 import dataStructure.*;
 import elements.nodeData;
@@ -20,11 +19,10 @@ class Graph_AlgoTest
 	Graph_Algo ga=new Graph_Algo();
 	nodeData [] nodes = new nodeData[10];
 	Point3D [] points=new Point3D[10];
-
+	
 	@BeforeAll
 	void init()
 	{
-
 		for(int i=0;i<10;i++)
 		{
 			points[i]=new Point3D(1,2);
@@ -51,13 +49,13 @@ class Graph_AlgoTest
 		g.connect(10,6,2);
 		g.connect(10,8,7);
 	}
+	
 	@Test
 	void initGraphTest() 
 	{
 		ga.init(g);
 		assertNotEquals(null,ga);
 	}
-
 
 	@Test
 	void testInitSave() 
@@ -72,41 +70,77 @@ class Graph_AlgoTest
 	@Test
 	void testIsConnected() 
 	{
+		Graph_Algo g1=new Graph_Algo();
 		ga.init(g);
-		assertTrue(ga.isConnected());
+		graph f=ga.copy();
+		g1.init(f);
+		assertTrue(g1.isConnected());
+		f.removeEdge(1, 10);
+		assertFalse(g1.isConnected());
 	}
 
 	@Test
 	void testShortestPathDist() 
 	{
 		ga.init(g);
-		double []expected=new double[5] ;
+		double []expected= {30.0, 54.0, 49.0, 61.0, 37.0};
 		double []actual=new double[5];
 		for(int i=0;i<5;i++)
 		{
 			actual[i]=ga.shortestPathDist(i+1, 10-i);
-			System.out.println(i+1+"------->"+(10-i)+" = "+actual[i]);
+			assertEquals(expected[i], actual[i]);
 		}
-		
 	}
 
 	@Test
 	void testShortestPath() 
 	{
-		fail("Not yet implemented");
+		ga.init(g);
+		String []expected= {"[ 1,  10]","[ 2,  1,  10,  8,  9]",
+				"[ 3,  2,  1,  10,  8]","[ 4,  5,  3,  2,  6,  7]","[ 5,  3,  2,  6]"};
+		ArrayList<List<node_data>> actual=new ArrayList<>();
+		for(int i=0;i<5;i++)
+		{
+			actual.add(ga.shortestPath(i+1, 10-i));
+			assertEquals(expected[i], actual.get(i).toString());
+		}
 	}
 
 	@Test
 	void testTSP() 
 	{
-		fail("Not yet implemented");
+		List<Integer> list=new ArrayList<>();
+		ga.init(g);
+		for(int i=4;i<11;i++)
+		{
+		//creates targets list --->[4,5,6,7,8,9,10] which as sub graph is NOT strongly connected
+			list.add(g.getNode(i).getKey());
+		}
+		Object expected=null;
+		Object actual=ga.TSP(list);
+		assertEquals(expected,actual);
+		//create targets list --->[1,2,10,9,8,6] which as sub graph is strongly connected.
+		list=new ArrayList<>();
+		list.add(g.getNode(1).getKey());
+		list.add(g.getNode(2).getKey());
+		list.add(g.getNode(10).getKey());
+		list.add(g.getNode(9).getKey());
+		list.add(g.getNode(8).getKey());
+		list.add(g.getNode(6).getKey());
+		expected= "[ 1,  2,  1,  10,  8,  9,  2,  6]";
+		actual=ga.TSP(list).toString();
+		assertEquals(expected,actual);	
 	}
 
 	@Test
 	void testCopy() 
 	{
-		fail("Not yet implemented");
+		ga.init(g);
+		graph f=ga.copy();
+		Graph_Algo temp= new Graph_Algo(f);
+	/*comparing objects addresses, if returns true i.e g and temp are two different objects*/
+		assertNotEquals(g, f); 
+	/*comparing objects toString which actually comparing the content of both objects */
+		assertEquals(ga, temp);
 	}
-
-
 }
