@@ -26,8 +26,8 @@ class Ex2Test {
 	private static graph _graph;
 	private static graph_algorithms _alg;
 	public static final double EPS = 0.001; 
-//	private static Point3D min = new Point3D(0,0,0);
-//	private static Point3D max = new Point3D(100,100,0);
+	private static Point3D min = new Point3D(0,0,0);
+	private static Point3D max = new Point3D(100,100,0);
 	@BeforeAll
 	static void setUpBeforeClass() throws Exception {
 		_graph = tinyGraph();
@@ -55,8 +55,7 @@ class Ex2Test {
 		graph ans = new DGraph();
 		return ans;
 	}
-	boolean drawGraph(graph g) 
-	{ 
+	boolean drawGraph(graph g) { 
 		Range rx=new Range(-8,9);
 		Range ry=new Range(-6,10);
 		Graph_GUI gg=new Graph_GUI(g);

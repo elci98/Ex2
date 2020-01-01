@@ -7,7 +7,7 @@ import dataStructure.*;
 import elements.nodeData;
 import utils.*;
 
-public class Graph_GUI extends Graph_Algo
+public class Graph_GUI 
 {
 	private Graph_Algo Graph=new Graph_Algo();
 	private graph g;
@@ -40,10 +40,12 @@ public class Graph_GUI extends Graph_Algo
 		return Graph.TSP(targets);
 	}
 	
-	
+	@Override
+	public String toString() {
+		return  Graph.toString();
+	}
 	
 //========================================================
-	
 	
 	public void drawGraph(int width, int height, Range rx, Range ry) 
 	{
@@ -92,126 +94,5 @@ public class Graph_GUI extends Graph_Algo
 			StdDraw.setPenColor(Color.RED);
 			StdDraw.point(x0, y0);
 		}
-
-
-
-
-	}
-
-
-	public static void main(String[] args)
-	{
-//		Range rx=new Range(-20,20);
-//		Range ry=new Range(-22,6);
-//		DGraph x=new DGraph();
-//		Point3D p=new Point3D(-10,4,3);
-//		nodeData n=new nodeData(p,1, 0);//num 1
-//		x.addNode(n);
-//		p=new Point3D(3,-2,1);
-//		nodeData m=new nodeData(p,2, 0);//num 2
-//		x.addNode(m);
-//		p=new Point3D(9,-10,1);
-//		nodeData v=new nodeData(p,3,0);//num 3
-//		x.addNode(v);
-//		p=new Point3D(14,-20,1);
-//		nodeData z=new nodeData(p,4,0);//num 4
-//		x.addNode(z);
-//		x.connect(1, 2, 10);
-//		x.connect(2, 1, 8);
-//		x.connect(1, 3, 100);
-//		x.connect(2, 3, 1);
-//		x.connect(4, 3, 11.3);
-//		x.connect(2, 4, 9);
-//		Graph_Algo g = new Graph_Algo();
-//		g.init(x);	
-//		Graph_GUI p1 = new Graph_GUI();
-//		p1.drawGraph(750,750,rx,ry,x);
-//		System.out.println(g.isConnected());
-		
-		Point3D p1=new Point3D (1,1);
-		Point3D p2=new Point3D (3,2);
-		Point3D p3=new Point3D (4,5);
-		Point3D p4=new Point3D (6,2);
-		Point3D p5=new Point3D (7,-1);
-		Point3D p6=new Point3D (5,-3);
-		Point3D p7=new Point3D (2,-2);
-		Point3D p8=new Point3D (-1,-4);
-		Point3D p9=new Point3D (-4,-2);
-		Point3D p10=new Point3D (-5,-1);
-		Point3D p11=new Point3D (-6,2);
-		Point3D p12=new Point3D (-5,4);
-		Point3D p13=new Point3D (-3,6);
-		Point3D p14=new Point3D (-1,3);
-		
-		nodeData n1=new nodeData(p1,1,3);
-		nodeData n2=new nodeData(p2,2,3);
-		nodeData n3=new nodeData(p3,3,3);
-		nodeData n4=new nodeData(p4,4,3);
-		nodeData n5=new nodeData(p5,5,3);
-		nodeData n6=new nodeData(p6,6,3);
-		nodeData n7=new nodeData(p7,7,3);
-		nodeData n8=new nodeData(p8,8,3);
-		nodeData n9=new nodeData(p9,9,3);
-		nodeData n10=new nodeData(p10,10,3);
-		nodeData n11=new nodeData(p11,11,3);
-		nodeData n12=new nodeData(p12,12,3);
-		nodeData n13=new nodeData(p13,13,3);
-		nodeData n14=new nodeData(p14,14,3);
-		
-		graph g=new DGraph();
-		g.addNode(n1);
-		g.addNode(n2);
-		g.addNode(n3);
-		g.addNode(n4);
-		g.addNode(n5);
-		g.addNode(n6);
-		g.addNode(n7);
-		g.addNode(n8);
-		g.addNode(n9);
-		g.addNode(n10);
-		g.addNode(n11);
-		g.addNode(n12);
-		g.addNode(n13);
-		g.addNode(n14);
-		
-		g.connect(3, 9, 3);
-		g.connect(7, 11, 3);
-		g.connect(1, 3, 3);
-		g.connect(1, 12, 3);
-		g.connect(1, 2, 3);
-		g.connect(2, 1, 4);
-		g.connect(3, 4, 5);
-		g.connect(4, 5, 6);
-		g.connect(4, 7, 32);
-		g.connect(5, 6, 13);
-		g.connect(6, 7, 63);
-		g.connect(7, 8, 44);
-		g.connect(8, 9, 34.6);
-		g.connect(9, 10, 31.2);
-		g.connect(9, 14, 10.3);
-		g.connect(10, 11, 12.5);
-		g.connect(11, 12, 18);
-		g.connect(1, 8, 23.6);
-		g.connect(12, 13, 39);
-		g.connect(5, 14, 55.6);
-		g.connect(14, 3, 43.2);
-		g.connect(14, 7, 98.6);
-		g.connect(10, 9, 98.6);
-		g.connect(13, 2, 98.6);
-	
-		Graph_GUI gu=new Graph_GUI(g);
-		Range rx=new Range(-8,9);
-		Range ry=new Range(-6,10);
-//		gu.drawGraph(750,750,rx,ry);
-		
-		System.out.println(gu.isConnected());
-//		g.removeEdge(13, 2);
-		gu.drawGraph(750,750,rx,ry);
-		System.out.println(gu.isConnected());
-		System.out.println(gu.shortestPathDist(1, 11));
-		System.out.println(gu.shortestPath(1, 11));
-		
-
-		
 	}
 }
