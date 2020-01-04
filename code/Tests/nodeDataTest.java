@@ -19,7 +19,7 @@ class nodeDataTest
 		for(int i=0;i<10;i++)
 		{
 			p=new Point3D(i,2*i,3*i);
-			node[i]=new nodeData(p,i,0);
+			node[i]=new nodeData(p,i+1,0);
 		}
 	}
 	
@@ -38,7 +38,7 @@ class nodeDataTest
 		for(int i=0;i<10;i++)
 		{
 			int actual=node[i].getKey();
-			int expected=i;
+			int expected=i+1;
 			assertEquals(expected,actual);
 		}
 	}
@@ -68,7 +68,7 @@ class nodeDataTest
 		for(int i= 0 ; i <10 ;i++)
 		{
 			p1=new Point3D(i,2*i,3*i);
-			n[i]=new nodeData(p1,i,0);
+			n[i]=new nodeData(p1,i+1,0);
 		}
 		for(int i=0;i<10;i++)
 		{
@@ -108,7 +108,7 @@ class nodeDataTest
 		for(int i=0;i<10;i++)
 		{
 			p1=new Point3D(i,2*i,3*i);
-			noded[i]=new nodeData(p1,i,0);
+			noded[i]=new nodeData(p1,i+1,0);
 		}
 		for(int i=0;i<10;i++)
 		{

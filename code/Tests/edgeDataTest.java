@@ -19,9 +19,9 @@ class edgeDataTest
 		for(int i=0;i<10;i++)
 		{
 			p=new Point3D(i,i+1,i+2);
-			src = new nodeData(p,i,1);
+			src = new nodeData(p,i+1,1);
 			p1=new Point3D(3*1,i+1,1+2.5);
-			dst = new nodeData(p1,2*i,0);
+			dst = new nodeData(p1,2*i+1,0);
 			edge[i]=new edgeData(src,dst,3*i);
 		}
 	}
@@ -42,7 +42,7 @@ class edgeDataTest
 		for(int i=0;i<10;i++)
 		{
 			int actual=edge[i].getSrc();
-			int expected=i;
+			int expected=i+1;
 			assertEquals(expected,actual);
 		}
 	}
@@ -53,7 +53,7 @@ class edgeDataTest
 		for(int i=0;i<10;i++)
 		{
 			int actual=edge[i].getDest();
-			int expected=2*i;
+			int expected=2*i+1;
 			assertEquals(expected,actual);
 		}
 	}

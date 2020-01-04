@@ -1,15 +1,18 @@
 package Tests;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import algorithms.*;
-import dataStructure.*;
-import utils.*;
-import gui.*;
+import algorithms.Graph_Algo;
+import algorithms.graph_algorithms;
+import dataStructure.DGraph;
+import dataStructure.graph;
+import gui.GUI;
+import utils.Point3D;
 
 /**
  * EX2 Structure test:
@@ -55,11 +58,9 @@ class Ex2Test {
 		graph ans = new DGraph();
 		return ans;
 	}
-	boolean drawGraph(graph g) { 
-		Range rx=new Range(-8,9);
-		Range ry=new Range(-6,10);
-		Graph_GUI gg=new Graph_GUI(g);
-		gg.drawGraph(500, 500, rx, ry);
+	boolean drawGraph(graph g) 
+	{ 
+		new GUI(g);
 		return true;
 		
 	}

@@ -28,7 +28,7 @@ public class Graph_Algo implements graph_algorithms
 	{
 
 	}
-	
+
 	public Graph_Algo(graph g) 
 	{
 		dGraph=g;
@@ -59,7 +59,7 @@ public class Graph_Algo implements graph_algorithms
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * save the current graph to Serialziable file
 	 * @param file_name
@@ -79,7 +79,7 @@ public class Graph_Algo implements graph_algorithms
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * this method checks whether the graph is strongly connected
 	 * @return true if the graph is strongly connected, false otherwise
@@ -111,6 +111,7 @@ public class Graph_Algo implements graph_algorithms
 	@Override
 	public double shortestPathDist(int src, int dest)
 	{
+		if(dGraph.getNode(src)==null || dGraph.getNode(dest)==null)return -1;
 		node_data current;
 		PriorityQueue<node_data> q=new PriorityQueue<>(dGraph.nodeSize(),new Vertex_Comperator());
 		initGraph(src);
@@ -141,7 +142,7 @@ public class Graph_Algo implements graph_algorithms
 		}
 		return dGraph.getNode(dest).getWeight();
 	}
-	
+
 	/**
 	 * this method uses shortestPathDist method and return a list contains all vertices
 	 * we`ve past through on the shortest path from src to dest
@@ -155,6 +156,11 @@ public class Graph_Algo implements graph_algorithms
 			System.out.println("there are no edges going out from vertex src");
 			return null;
 		}
+		if(shortestPathDist(src,dest)==-1)
+		{
+			System.out.println("invalid input");
+			return null;
+		}
 		List<node_data> ans=new ArrayList<>();
 		node_data runner=dGraph.getNode(dest);
 		while(runner.getKey()!=src)//make us stop after adding drc vertex to the List
@@ -166,7 +172,7 @@ public class Graph_Algo implements graph_algorithms
 		Collections.reverse(ans);
 		return ans;
 	}
-	
+
 	/**
 	 * computes a relatively short path which visit each node in the targets List.
 	 * Note: this is NOT the classical traveling salesman problem, 
@@ -185,7 +191,7 @@ public class Graph_Algo implements graph_algorithms
 		List<node_data> TSP = new LinkedList<node_data>();
 		Iterator<Integer> i = targets.iterator();
 		int src=i.next();
-		TSP.add(0,subGraph.getNode(src));
+		TSP.add(0,dGraph.getNode(src));
 		while(i.hasNext()) 
 		{
 			int dest=i.next();
@@ -233,14 +239,14 @@ public class Graph_Algo implements graph_algorithms
 		graph g=new DGraph(Nodes,EdgesSize,srcMap);
 		return g;
 	}
-	
+
 	@Override
 	public String toString()
 	{
 		return dGraph.toString();
 	}
 	//====================================Auxiliary methods============================	
-	
+
 	@Override
 	public boolean equals(Object o)
 	{
@@ -289,20 +295,21 @@ public class Graph_Algo implements graph_algorithms
 		graph g=new DGraph(Nodes,EdgesSize,srcMap);
 		return g;
 	}
-	
+
 	/**
 	 * Auxiliary recursive function for isConnected method
 	 * */
 	private void isConnected_Recursive(Collection<edge_data> edge)
 	{
-		for(edge_data e : edge)
-		{
-			if(dGraph.getNode(e.getDest()).getTag() == -1 )
+		if(edge!=null)
+			for(edge_data e : edge)
 			{
-				dGraph.getNode(e.getDest()).setTag(1);
-				isConnected_Recursive(dGraph.getE(e.getDest()));
+				if(dGraph.getNode(e.getDest()).getTag() == -1 )
+				{
+					dGraph.getNode(e.getDest()).setTag(1);
+					isConnected_Recursive(dGraph.getE(e.getDest()));
+				}
 			}
-		}
 		return;
 	}
 
@@ -317,7 +324,7 @@ public class Graph_Algo implements graph_algorithms
 		}
 		return true;
 	}
-	
+
 	/**
 	 * Auxiliary method for Dijkstra algorithm
 	 * set all vertices Tag to -1

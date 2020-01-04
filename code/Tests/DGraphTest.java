@@ -25,7 +25,7 @@ class DGraphTest
 		for(int i=0;i<10;i++)
 		{
 			points[i]=new Point3D (i,i+1);
-			vertices[i]=new nodeData(points[i],i,0);
+			vertices[i]=new nodeData(points[i],i+1,0);
 			dg.addNode(vertices[i]);
 		}
 		for(int i=1;i<5;i++)
@@ -71,7 +71,7 @@ class DGraphTest
 	{
 		for(int i=0;i<10;i++)
 		{
-			assertNotEquals(null, dg.getNode(i));
+			assertNotEquals(null, dg.getNode(i+1));
 		}
 	}
 
@@ -128,7 +128,7 @@ class DGraphTest
 		for(int i=0;i<10;i++)
 		{
 			p[i]=new Point3D (i,i+1);
-			v[i]=new nodeData(p[i],i,0);
+			v[i]=new nodeData(p[i],i+1,0);
 			d.addNode(v[i]);
 		}
 		for(int i=0;i<10;i++) 
@@ -147,7 +147,7 @@ class DGraphTest
 		for(int i=0;i<10;i++)
 		{
 			p[i]=new Point3D (i,i+1);
-			v[i]=new nodeData(p[i],i,0);
+			v[i]=new nodeData(p[i],i+1,0);
 			d.addNode(v[i]);
 		}
 		for(int i=1;i<5;i++)
@@ -157,9 +157,9 @@ class DGraphTest
 		}
 		for(int i=1;i<5;i++)
 		{
-			d.removeEdge(i, 2*i);
+			d.removeEdge(i+1, 2*i);
 			d.removeEdge(2*i-1, i+1);
-			assertEquals(null,d.getEdge(i, 2*i));
+			assertEquals(null,d.getEdge(i+1, 2*i));
 			assertEquals(null,d.getEdge(2*i-1, i+1));
 		}
 	}

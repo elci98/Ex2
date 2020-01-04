@@ -29,51 +29,56 @@ package utils;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.FileDialog;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.MediaTracker;
 import java.awt.RenderingHints;
-import java.awt.Toolkit;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-
 import java.awt.geom.Arc2D;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
-
 import java.awt.image.BufferedImage;
 import java.awt.image.DirectColorModel;
 import java.awt.image.WritableRaster;
-
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
-
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-
+import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.TreeSet;
+import java.util.List;
 import java.util.NoSuchElementException;
-import javax.imageio.ImageIO;
+import java.util.TreeSet;
 
+import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.KeyStroke;
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
+
+import algorithms.Graph_Algo;
+import dataStructure.edge_data;
+import dataStructure.graph;
+import dataStructure.node_data;
 
 /**
  *  The {@code StdDraw} class provides a basic capability for
@@ -578,8 +583,10 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 
 	// default canvas size is DEFAULT_SIZE-by-DEFAULT_SIZE
 	private static final int DEFAULT_SIZE = 512;
-	private static int width  = DEFAULT_SIZE;
-	private static int height = DEFAULT_SIZE;
+	private static final int WIDTH_DEFAULT_SIZE = 800;
+	private static final int HEIGHT_DEFAULT_SIZE = 600;
+	private static int width  = WIDTH_DEFAULT_SIZE;
+	private static int height = HEIGHT_DEFAULT_SIZE;
 
 	// default pen radius
 	private static final double DEFAULT_PEN_RADIUS = 0.002;
@@ -631,7 +638,7 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 	private static TreeSet<Integer> keysDown = new TreeSet<Integer>();
 
 	// singleton pattern: client can't instantiate
-	private StdDraw() { }
+	public StdDraw() { }
 
 
 	// static initializer
@@ -647,7 +654,7 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 	 * of a program.
 	 */
 	public static void setCanvasSize() {
-		setCanvasSize(DEFAULT_SIZE, DEFAULT_SIZE);
+		setCanvasSize(WIDTH_DEFAULT_SIZE, HEIGHT_DEFAULT_SIZE);
 	}
 
 	/**
@@ -671,7 +678,8 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 	}
 
 	// init
-	private static void init() {
+	public static void init() 
+	{
 		if (frame != null) frame.setVisible(false);
 		frame = new JFrame();
 		offscreenImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
@@ -705,24 +713,47 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 		frame.setResizable(false);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);            // closes all windows
 		// frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);      // closes only current window
-		frame.setTitle("Standard Draw");
+		frame.setTitle("The Maze of Waze");
 		frame.setJMenuBar(createMenuBar());
 		frame.pack();
 		frame.requestFocusInWindow();
+		frame.setLocation(400, 100);
 		frame.setVisible(true);
+	}
+	static graph GRAPH;
+	static Graph_Algo ga;
+	public static void initGraph(graph g)
+	{
+		GRAPH=g;
+		ga=new Graph_Algo(g);
 	}
 
 	// create the menu bar (changed to private)
-	private static JMenuBar createMenuBar() {
-		JMenuBar menuBar = new JMenuBar();
-		JMenu menu = new JMenu("File");
-		menuBar.add(menu);
-		JMenuItem menuItem1 = new JMenuItem(" Save...   ");
-		menuItem1.addActionListener(std);
-		menuItem1.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S,
-				Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-		menu.add(menuItem1);
-		return menuBar;
+	private static JMenuBar createMenuBar() 
+	{
+		JMenuBar menu=new JMenuBar();
+		JMenuItem algo=new JMenu("Algorithms");
+		JMenuItem isConnected = new JMenuItem("isConnected ??");
+		JMenuItem shortestPathDist = new JMenuItem("shortestPathDist");
+		JMenuItem shortestPath = new JMenuItem("shortestPath");
+		JMenuItem TSP = new JMenuItem("TSP");
+		JMenuItem[] items= { isConnected, shortestPath, shortestPathDist, TSP };
+		for(JMenuItem i:items)
+			algo.add(i);
+		JMenuItem file=new JMenu("File");
+		JMenuItem save=new JMenuItem("Save");
+		JMenuItem load=new JMenuItem("Load");
+		isConnected.addActionListener(std);
+		shortestPath.addActionListener(std);
+		shortestPathDist.addActionListener(std);
+		TSP.addActionListener(std);
+		save.addActionListener(std);
+		load.addActionListener(std);
+		file.add(load);
+		file.add(save);
+		menu.add(file);
+		menu.add(algo);
+		return menu;
 	}
 
 
@@ -1653,13 +1684,283 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 	 * This method cannot be called directly.
 	 */
 	@Override
-	public void actionPerformed(ActionEvent e) {
-		FileDialog chooser = new FileDialog(StdDraw.frame, "Use a .png or .jpg extension", FileDialog.SAVE);
-		chooser.setVisible(true);
-		String filename = chooser.getFile();
-		if (filename != null) {
-			StdDraw.save(chooser.getDirectory() + File.separator + chooser.getFile());
+	public void actionPerformed(ActionEvent e) 
+	{
+		String message="initiliaze message";
+		boolean flag;
+		String title;
+		switch(e.getActionCommand())
+		{
+		case "isConnected ??":
+		{
+			title="isConnected ??";
+			if(ga!=null)
+			{
+				flag = ga.isConnected();
+				message = flag ?"The Graph is strongly connected":"The Graph is NOT strongly connected";
+				JOptionPane.showMessageDialog(null, message, title, JOptionPane.INFORMATION_MESSAGE);
+			}
+			else
+			{
+				message="Error! - the Graph is empty";
+				JOptionPane.showMessageDialog(null, message, title, JOptionPane.ERROR_MESSAGE);
+			}
+			break;
 		}
+		case "shortestPathDist":
+		{
+			title="shortestPathDist(src, dest)";
+			if(ga!=null)
+			{
+				JTextField src = new JTextField();
+				JTextField dest = new JTextField();
+				Object[] spd = {
+						"src vertex:", src,
+						"dest vertex:", dest
+				};
+				int option = JOptionPane.showConfirmDialog(null, spd, title, JOptionPane.DEFAULT_OPTION);
+				if(option==JOptionPane.OK_OPTION) //proceed only if ok button pressed
+				{
+					if(!src.getText().equals("") && !dest.getText().equals(""))//make sure the input contains two numbers
+					{
+						int source=Integer.parseInt(src.getText());
+						int destination=Integer.parseInt(dest.getText());
+						double ans=ga.shortestPathDist(source, destination);
+						if(ans == -1 || ans == Double.MAX_VALUE)
+						{
+							message="invalid input!";
+							JOptionPane.showMessageDialog(null, message, title, JOptionPane.ERROR_MESSAGE);
+							break;
+						}
+						message="the shortest Path from vertex\t "+source+" to vertex\t "+destination+" is: \t"+ans;
+						JOptionPane.showMessageDialog(null, message, title, JOptionPane.INFORMATION_MESSAGE);
+					}
+					else
+					{
+						message="Error! - invalid input";
+						JOptionPane.showMessageDialog(null, message, title, JOptionPane.ERROR_MESSAGE);
+					}
+				}
+			}
+			else
+			{
+				message="Error! - the Graph is empty";
+				JOptionPane.showMessageDialog(null, message, title, JOptionPane.ERROR_MESSAGE);
+			}
+			break;
+		}
+		case "shortestPath":
+		{
+			title="shortestPath(src, dest)";
+			if(ga!=null)
+			{
+				JTextField src = new JTextField();
+				JTextField dest = new JTextField();
+				Object[] spd = {
+						"src vertex:", src,
+						"dest vertex:", dest
+				};
+				int option = JOptionPane.showConfirmDialog(null, spd, title, JOptionPane.DEFAULT_OPTION);
+				if(option==JOptionPane.OK_OPTION) //proceed only if ok button pressed
+				{
+					if(!src.getText().equals("") && !dest.getText().equals(""))//make sure the input contains two numbers
+					{
+						int source=Integer.parseInt(src.getText());
+						int destination=Integer.parseInt(dest.getText());
+						List<node_data> ans=ga.shortestPath(source, destination);
+						if(ans == null)
+						{
+							message="invalid input!";
+							JOptionPane.showMessageDialog(null, message, title, JOptionPane.ERROR_MESSAGE);
+							break;
+						}
+						message="The shortest Path from vertex\t "+source+" to vertex\t "+destination+" is:\t "+ans.toString();
+						JOptionPane.showMessageDialog(null, message, title, JOptionPane.INFORMATION_MESSAGE);
+					}
+					else
+					{
+						message="Error! - invalid input";
+						JOptionPane.showMessageDialog(null, message, title, JOptionPane.ERROR_MESSAGE);
+					}
+				}
+			}
+			else
+			{
+				message="Error! - the Graph is empty";
+				JOptionPane.showMessageDialog(null, message, title, JOptionPane.ERROR_MESSAGE);
+			}
+			break;
+		}
+		case "TSP":
+		{
+			title="TSP(List<Integer> targets)";
+			if(ga!=null)
+			{
+				JTextField vertices = new JTextField();
+				Object[] opt = {"Please enter a list of target vertices", vertices};
+				int option = JOptionPane.showConfirmDialog(null, opt, title, JOptionPane.DEFAULT_OPTION);
+				if(option==JOptionPane.OK_OPTION)
+				{
+					String text=vertices.getText();
+					List<Integer> targets=new ArrayList<>();;
+					for(int i=0;i<text.length();i++)
+					{
+						if(text.charAt(i)>'0' && text.charAt(i)<='9')
+							targets.add(Integer.parseInt(text.charAt(i)+""));
+					}
+					if(targets.isEmpty())//i.e thr input is empty
+					{
+						message="Invalid input! please try again";
+						JOptionPane.showMessageDialog(null, message, title, JOptionPane.ERROR_MESSAGE);
+						break;
+					}
+					List<node_data> ans;
+					if((ans = ga.TSP(targets))== null)//i.e the sub graph is not strongly connected
+					{
+						message="ERROR! This sub graph is NOT strongly connected.";
+						JOptionPane.showMessageDialog(null, message, title, JOptionPane.ERROR_MESSAGE);
+						break;
+					}
+					message="The shortest path that includes all vertices you mentiond is:"+ans.toString();
+					JOptionPane.showMessageDialog(null, message, title, JOptionPane.INFORMATION_MESSAGE);
+				}
+			}
+			else
+			{
+				message="Error! - the Graph is empty";
+				JOptionPane.showMessageDialog(null, message, title, JOptionPane.ERROR_MESSAGE);
+			}
+			break;
+		}
+		case "Load":
+		{
+			title="Load Graph";
+			JFileChooser file=new JFileChooser("./");
+			int returned = file.showOpenDialog(null);
+			if(returned == JFileChooser.APPROVE_OPTION)
+			{
+				try 
+				{
+					FileInputStream f=new FileInputStream(file.getSelectedFile());
+					ObjectInputStream obj= new ObjectInputStream(f);
+					graph g=((graph) obj.readObject());
+					initGraph(g);
+					init();
+					drawGraph(g);
+					obj.close();
+				} 
+				catch (IOException | ClassNotFoundException er) 
+				{
+					JOptionPane.showMessageDialog(null, "invalid File", title, JOptionPane.ERROR_MESSAGE);
+				}				
+			}
+			break;
+		}
+		case "Save":
+		{
+			title="Save File";
+			if(GRAPH!=null)
+			{
+				JTextField fileName = new JTextField();
+				Object[] opt = {"Please enter graph Name\n NOTE: if graph name already exists it will be overrided", fileName};
+				int option = JOptionPane.showConfirmDialog(null, opt, title, JOptionPane.DEFAULT_OPTION);
+				if(option == JOptionPane.OK_OPTION)
+				{
+					try 
+					{
+						FileOutputStream f=new FileOutputStream(fileName.getText());
+						ObjectOutputStream obj=new ObjectOutputStream(f);
+						obj.writeObject(GRAPH);
+						obj.close();
+						JOptionPane.showMessageDialog(null, "Graph saved succesfully", title, JOptionPane.INFORMATION_MESSAGE);
+					} 
+					catch (IOException er) 
+					{
+						JOptionPane.showMessageDialog(null, "something went wrong try again", title, JOptionPane.ERROR_MESSAGE);
+					}
+				}
+
+			}
+			else
+			{
+				message="Error! - there is no Graph to save";
+				JOptionPane.showMessageDialog(null, message, title, JOptionPane.ERROR_MESSAGE);
+			}
+			break;
+		}
+		}
+
+	}
+	public static void drawGraph(graph G)
+	{
+		Range rx=findRx(G);
+		Range ry=findRy(G);
+		StdDraw.setXscale(rx.get_min(),rx.get_max());
+		StdDraw.setYscale(ry.get_min(),ry.get_max());
+		StdDraw.text((rx.get_min()+rx.get_max())/2, ry.get_min()+2, "© Max Raycher & Elchanan Mahatsri");
+		for(node_data vertex:G.getV())
+		{
+			double x0=vertex.getLocation().x();
+			double y0=vertex.getLocation().y();
+			if(G.getE(vertex.getKey())!=null)
+			{
+				for(edge_data edge:G.getE(vertex.getKey()))
+				{
+					setPenRadius(0.0025);
+					StdDraw.setPenColor(Color.orange);
+					Font f=new Font("BOLD", Font.ITALIC, 18);
+					StdDraw.setFont(f);
+					double x1=G.getNode(edge.getDest()).getLocation().x();
+					double y1=G.getNode(edge.getDest()).getLocation().y();
+
+					//draw edges
+					StdDraw.line(x0, y0, x1, y1);
+					StdDraw.setPenRadius(0.025);
+
+					//draw direction points
+					StdDraw.setPenColor(Color.GREEN);
+					StdDraw.point(x0*0.1+x1*0.9, y0*0.1+y1*0.9);
+
+					//draw dst vertex
+					StdDraw.setPenColor(Color.RED);
+					StdDraw.point(x1, y1);
+
+					//draw vertices weights
+					StdDraw.setPenColor(Color.GRAY);
+					StdDraw.text(x0*0.05+x1*0.95,y0*0.05+y1*0.95, (int)vertex.getKey()+"");
+
+					//draw edges weight
+					StdDraw.setPenColor(Color.BLACK);
+					double rnd1=Math.random();
+					double rnd2=1-rnd1;
+					StdDraw.text(x0*rnd1+x1*rnd2, y0*rnd1+y1*rnd2,edge.getWeight()+"");
+				}
+			}
+			StdDraw.setPenRadius(0.025);
+			StdDraw.setPenColor(Color.RED);
+			StdDraw.point(x0, y0);
+		}
+	}
+
+	private static Range findRx(graph g) 
+	{
+		double minX=0, maxX=0;
+		for(node_data node :g.getV())
+		{
+			minX=Math.min(node.getLocation().ix(), minX);
+			maxX=Math.max(node.getLocation().ix(), maxX);
+		}
+		return new Range(minX-10, maxX+10);
+	}
+	private static Range findRy(graph g) 
+	{
+		double minY=0, maxY=0;
+		for(node_data node :g.getV())
+		{
+			minY=Math.min(node.getLocation().iy(), minY);
+			maxY=Math.max(node.getLocation().iy(), maxY);
+		}
+		return new Range(minY-10, maxY+10);
 	}
 
 

@@ -16,13 +16,18 @@ public class nodeData implements node_data,Serializable
 	private int _key,_tag=-1;
 	private double _weight;
 	private String _info;
-	
-	
+
+
 	public nodeData(Point3D location, int key, double weight)
 	{
-		_location=location;
-		_key=key;
-		_weight=weight;
+		if(key<1)
+			System.out.println("invalid key");
+		else
+		{
+			_location=location;
+			_key=key;
+			_weight=weight;
+		}
 	}
 	@Override
 	public int getKey() 
