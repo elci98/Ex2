@@ -9,12 +9,12 @@
 
 * elements: 2 classes for edges and vertices.
 
-* GUI: option for see your WD Graph on GUI window ,(example below
+* GUI: option for loading saving and preform algorithms on WD Graph in a GUI window ,(example below).
 
 * Tests:tests for classes- edgeData,nodeData,DGraph,Graph_Algo.
 
 * utils: util auxiliary classes - Point3D, Range, stdDraw.
 
-<a href="http://www.siz.co.il/"><img src="http://up419.siz.co.il/up3/zymuzznmwjyn.png" border="0" alt="graph" /></a>
+<a href="http://www.siz.co.il/"><img src="http://up419.siz.co.il/up3/3zezkzyj3tjy.png" border="0" alt="Weights Directed Graph" /></a>
 
 # for more info enter our wiki!  https://github.com/elci98/Ex2/wiki  :-)
