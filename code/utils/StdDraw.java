@@ -1947,9 +1947,7 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 
 					//draw edges weight
 					StdDraw.setPenColor(Color.BLACK);
-					double rnd1=Math.random();
-					double rnd2=1-rnd1;
-					StdDraw.text(x0*rnd1+x1*rnd2, y0*rnd1+y1*rnd2,edge.getWeight()+"");
+					StdDraw.text((x0+x1)/2, (y0+y1)/2,edge.getWeight()+"");
 				}
 			}
 			StdDraw.setPenRadius(0.025);
