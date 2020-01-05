@@ -185,6 +185,7 @@ public class Graph_Algo implements graph_algorithms
 	public List<node_data> TSP(List<Integer> targets) 
 	{
 		graph subGraph=subGraph(targets); //buils a sub graph containing only relevant verticex and edges.
+		if(subGraph==null)return new ArrayList<node_data>();
 		Graph_Algo temp=new Graph_Algo(subGraph);
 		if(!temp.isConnected())return null;//check if the sub graph is connected.
 		HashSet<Integer> bool=new HashSet<Integer>();

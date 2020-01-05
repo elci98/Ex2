@@ -1802,22 +1802,38 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 				if(option==JOptionPane.OK_OPTION)
 				{
 					String text=vertices.getText();
-					List<Integer> targets=new ArrayList<>();;
+					List<Integer> targets=new ArrayList<>();
+					String temp="";
 					for(int i=0;i<text.length();i++)
 					{
 						if(text.charAt(i)>'0' && text.charAt(i)<='9')
-							targets.add(Integer.parseInt(text.charAt(i)+""));
+						{
+							temp+=text.charAt(i);
+							if(i==text.length()-1)
+								targets.add(Integer.parseInt(temp));
+						}
+						else if(!temp.equals(""))
+						{
+							targets.add(Integer.parseInt(temp));
+							temp="";
+						}
 					}
-					if(targets.isEmpty())//i.e thr input is empty
+					if(targets.isEmpty())//i.e input is empty
 					{
 						message="Invalid input! please try again";
 						JOptionPane.showMessageDialog(null, message, title, JOptionPane.ERROR_MESSAGE);
 						break;
 					}
 					List<node_data> ans;
-					if((ans = ga.TSP(targets))== null)//i.e the sub graph is not strongly connected
+					if((ans = ga.TSP(targets)) == null)//i.e the sub graph is not strongly connected
 					{
 						message="ERROR! This sub graph is NOT strongly connected.";
+						JOptionPane.showMessageDialog(null, message, title, JOptionPane.ERROR_MESSAGE);
+						break;
+					}
+					if(ans.isEmpty())
+					{
+						message="Invalid input! please try again";
 						JOptionPane.showMessageDialog(null, message, title, JOptionPane.ERROR_MESSAGE);
 						break;
 					}
@@ -1897,7 +1913,7 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 		Range ry=findRy(G);
 		StdDraw.setXscale(rx.get_min(),rx.get_max());
 		StdDraw.setYscale(ry.get_min(),ry.get_max());
-		StdDraw.text((rx.get_min()+rx.get_max())/2, ry.get_min()+2, "© Max Raycher & Elchanan Mahatsri");
+		StdDraw.text((rx.get_min()+rx.get_max())/2, ry.get_min()+2.5, "© Max Raycher & Elchanan Mahatsri");
 		for(node_data vertex:G.getV())
 		{
 			double x0=vertex.getLocation().x();
