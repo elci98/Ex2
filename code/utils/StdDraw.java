@@ -1913,6 +1913,8 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 		Range ry=findRy(G);
 		StdDraw.setXscale(rx.get_min(),rx.get_max());
 		StdDraw.setYscale(ry.get_min(),ry.get_max());
+		StdDraw.clear();
+		StdDraw.setPenColor(Color.BLACK);
 		StdDraw.text((rx.get_min()+rx.get_max())/2, ry.get_min()+2.5, "© Max Raycher & Elchanan Mahatsri");
 		for(node_data vertex:G.getV())
 		{
@@ -1943,7 +1945,7 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 
 					//draw vertices weights
 					StdDraw.setPenColor(Color.GRAY);
-					StdDraw.text(x0*0.05+x1*0.95,y0*0.05+y1*0.95, (int)vertex.getKey()+"");
+					StdDraw.text(x0,y0+5, (int)vertex.getKey()+"");
 
 					//draw edges weight
 					StdDraw.setPenColor(Color.BLACK);
